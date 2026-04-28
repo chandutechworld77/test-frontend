@@ -2,7 +2,7 @@ name: 01-deploy-dev (ACA)
 
 on:
   push:
-    branches: ["test"]
+    branches: ["dev"]
   workflow_dispatch:
 
 permissions:
@@ -18,8 +18,8 @@ jobs:
   # BUILD + SCAN + PUSH
   # ============================
   build:
-    runs-on: ubuntu-latest
-    environment: test
+    runs-on: ubuntu-ladev
+    environment: dev
 
     outputs:
       IMAGE: ${{ steps.img.outputs.IMAGE }}
@@ -113,8 +113,8 @@ jobs:
   # DEPLOY JOB
   # ============================
   deploy:
-    runs-on: ubuntu-latest
-    environment: test
+    runs-on: ubuntu-ladev
+    environment: dev
     needs: build
 
     steps:
@@ -137,7 +137,7 @@ jobs:
               -g "${{ vars.RG_ENV }}" \
               -n "${{ vars.APP_NAME }}" \
               --environment "${{ vars.CAE_ENV }}" \
-              --image mcr.microsoft.com/azuredocs/containerapps-helloworld:latest \
+              --image mcr.microsoft.com/azuredocs/containerapps-helloworld:ladev \
               --ingress "${{ vars.INGRESS_TYPE }}" \
               --target-port 80 \
               --transport auto \
@@ -225,5 +225,5 @@ jobs:
           az containerapp show \
             -g "${{ vars.RG_ENV }}" \
             -n "${{ vars.APP_NAME }}" \
-            --query "{state:properties.provisioningState,fqdn:properties.configuration.ingress.fqdn,revision:properties.latestReadyRevisionName}" \
+            --query "{state:properties.provisioningState,fqdn:properties.configuration.ingress.fqdn,revision:properties.ladevReadyRevisionName}" \
             -o table
